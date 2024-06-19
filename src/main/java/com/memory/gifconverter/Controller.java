@@ -68,6 +68,8 @@ public class Controller implements Initializable {
     File selectedFile; // Файл выбранный через select video
     File placeToSaveGif;
     File tempPreviewImage;
+    String defaultFileName = "UnnamedGif";
+    static File lastCreatedGif;
 
     @FXML
     private Slider numbersOfColor;
@@ -100,46 +102,31 @@ public class Controller implements Initializable {
             placeToSaveGif = directoryChooser.showDialog(((Stage) ((Node) event.getSource()).getScene().getWindow()));
             System.out.println("Selected folder: " + placeToSaveGif);
 
-            if (placeToSaveGif != null && isSaveWithSameName.isSelected()) {
-                String fileNameWithoutExtension = FilenameUtils.getBaseName(selectedFile.getName());
+            if (isSaveWithSameName.isSelected()){
+                System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+                System.out.println("Creating gif: " + selectedFile.getAbsolutePath());
 
-                File outputGif = new File(placeToSaveGif, fileNameWithoutExtension + ".gif");
+                CreateGifProcess(selectedFile.getAbsoluteFile(), (int) numbersOfColor.getValue(), (int) bitrate.getValue(),
+                        placeToSaveGif.getAbsolutePath() + FilenameUtils.getBaseName(selectedFile.getName()) + ".gif");
+                lastCreatedGif = new File(placeToSaveGif.getAbsolutePath() + FilenameUtils.getBaseName(selectedFile.getName()) + ".gif");
+            } else {
+                System.out.println("Selected file: " + selectedFile.getAbsolutePath());
 
-                int colors = (int) numbersOfColor.getValue();
-                int intBitrate = (int) bitrate.getValue();
-
-                ProcessBuilder gifCreatorProcess = new ProcessBuilder(
-                        tempFfmpegFile.getAbsolutePath(),
-                        "-i", selectedFile.getAbsolutePath(),
-                        "-y",
-                        "-vf", "fps=15,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=" + colors + "[p];[s1][p]paletteuse",
-                        "-b:v", intBitrate + "k",
-                        outputGif.getAbsolutePath()
-                );
-
-                try {
-                    System.out.println("Running GIF creation command: " + String.join(" ", gifCreatorProcess.command()));
-                    Process gifProcess = gifCreatorProcess.inheritIO().start();
-                    gifProcess.waitFor();
-                    System.out.println("GIF creation exit code: " + gifProcess.exitValue());
-
-                    if (gifProcess.exitValue() == 0) {
-                        System.out.println("GIF created successfully: " + outputGif.getAbsolutePath());
-
-                        if (outputGif.exists()) {
-                            if (isOpenAfterRender.isSelected()) {
-                                openFile(outputGif);
-                            }
-                        } else {
-                            System.err.println("Error: GIF file does not exist.");
-                        }
-                    } else {
-                        System.err.println("Error occurred while creating GIF.");
-                    }
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
+                if (gifName.getText().isEmpty()){
+                    CreateGifProcess(selectedFile.getAbsoluteFile(), (int) numbersOfColor.getValue(), (int) bitrate.getValue(),
+                            placeToSaveGif.getAbsolutePath() + defaultFileName + ".gif");
+                    lastCreatedGif = new File(placeToSaveGif.getAbsolutePath() + defaultFileName + ".gif");
+                } else {
+                    CreateGifProcess(selectedFile.getAbsoluteFile(), (int) numbersOfColor.getValue(), (int) bitrate.getValue(),
+                            placeToSaveGif.getAbsolutePath() + gifName.getText() + ".gif");
+                    lastCreatedGif = new File(placeToSaveGif.getAbsolutePath() + gifName.getText() + ".gif");
                 }
+                System.out.println("Creating gif: " + placeToSaveGif.getAbsolutePath() + ".gif");
             }
+            if (isOpenAfterRender.isSelected()){
+                openFile(lastCreatedGif);
+            }
+
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No video selected");
@@ -148,9 +135,6 @@ public class Controller implements Initializable {
             alert.showAndWait();
         }
     }
-
-
-
     @FXML
     void OnSelectVideo(MouseEvent event) {
         FileChooser videoChooser = new FileChooser();
@@ -205,4 +189,30 @@ public class Controller implements Initializable {
         }
     }
 
+    static void CreateGifProcess(File fileInput, int colors, int bitrate, String fileOutput){
+
+        ProcessBuilder gifCreatorProcess = new ProcessBuilder(
+                tempFfmpegFile.getAbsolutePath(),
+                "-i", fileInput.getAbsolutePath(),
+                "-y",
+                "-vf", "fps=15,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=" + colors + "[p];[s1][p]paletteuse",
+                "-b:v", bitrate + "k",
+                fileOutput
+        );
+        try {
+            System.out.println("Running GIF creation command: " + String.join(" ", gifCreatorProcess.command()));
+            Process gifProcess = gifCreatorProcess.inheritIO().start();
+            gifProcess.waitFor();
+            System.out.println("GIF creation exit code: " + gifProcess.exitValue());
+
+            if (gifProcess.exitValue() == 0) {
+                System.out.println("GIF created successfully: " + fileOutput);
+                lastCreatedGif = new File(fileOutput); // ссылка на только что созданный гиф
+            } else {
+                System.err.println("Error occurred while creating GIF.");
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
