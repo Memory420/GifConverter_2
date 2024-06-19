@@ -1,5 +1,6 @@
 package com.memory.gifconverter;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -102,31 +103,33 @@ public class Controller implements Initializable {
             placeToSaveGif = directoryChooser.showDialog(((Stage) ((Node) event.getSource()).getScene().getWindow()));
             System.out.println("Selected folder: " + placeToSaveGif);
 
-            if (isSaveWithSameName.isSelected()){
+            if (isSaveWithSameName.isSelected()) {
                 System.out.println("Selected file: " + selectedFile.getAbsolutePath());
-                System.out.println("Creating gif: " + selectedFile.getAbsolutePath());
+                String outputFileName = FilenameUtils.getBaseName(selectedFile.getName()) + ".gif";
+                File outputFile = new File(placeToSaveGif, outputFileName);
 
                 CreateGifProcess(selectedFile.getAbsoluteFile(), (int) numbersOfColor.getValue(), (int) bitrate.getValue(),
-                        placeToSaveGif.getAbsolutePath() + FilenameUtils.getBaseName(selectedFile.getName()) + ".gif");
-                lastCreatedGif = new File(placeToSaveGif.getAbsolutePath() + FilenameUtils.getBaseName(selectedFile.getName()) + ".gif");
+                        outputFile.getAbsolutePath());
+                lastCreatedGif = outputFile;
             } else {
                 System.out.println("Selected file: " + selectedFile.getAbsolutePath());
-
-                if (gifName.getText().isEmpty()){
-                    CreateGifProcess(selectedFile.getAbsoluteFile(), (int) numbersOfColor.getValue(), (int) bitrate.getValue(),
-                            placeToSaveGif.getAbsolutePath() + defaultFileName + ".gif");
-                    lastCreatedGif = new File(placeToSaveGif.getAbsolutePath() + defaultFileName + ".gif");
+                String outputFileName;
+                if (gifName.getText().isEmpty()) {
+                    outputFileName = defaultFileName + ".gif";
                 } else {
-                    CreateGifProcess(selectedFile.getAbsoluteFile(), (int) numbersOfColor.getValue(), (int) bitrate.getValue(),
-                            placeToSaveGif.getAbsolutePath() + gifName.getText() + ".gif");
-                    lastCreatedGif = new File(placeToSaveGif.getAbsolutePath() + gifName.getText() + ".gif");
+                    outputFileName = gifName.getText() + ".gif";
                 }
-                System.out.println("Creating gif: " + placeToSaveGif.getAbsolutePath() + ".gif");
+                File outputFile = new File(placeToSaveGif, outputFileName);
+
+                CreateGifProcess(selectedFile.getAbsoluteFile(), (int) numbersOfColor.getValue(), (int) bitrate.getValue(),
+                        outputFile.getAbsolutePath());
+                lastCreatedGif = outputFile;
             }
-            if (isOpenAfterRender.isSelected()){
+            System.out.println("Creating gif: " + lastCreatedGif.getAbsolutePath());
+
+            if (isOpenAfterRender.isSelected()) {
                 openFile(lastCreatedGif);
             }
-
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No video selected");
@@ -189,8 +192,7 @@ public class Controller implements Initializable {
         }
     }
 
-    static void CreateGifProcess(File fileInput, int colors, int bitrate, String fileOutput){
-
+    static void CreateGifProcess(File fileInput, int colors, int bitrate, String fileOutput) {
         ProcessBuilder gifCreatorProcess = new ProcessBuilder(
                 tempFfmpegFile.getAbsolutePath(),
                 "-i", fileInput.getAbsolutePath(),
@@ -213,6 +215,14 @@ public class Controller implements Initializable {
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+    @FXML
+    void onCheckboxClick(ActionEvent event) {
+        if (isSaveWithSameName.isSelected()){
+            gifName.setDisable(true);
+        } else{
+            gifName.setDisable(false);
         }
     }
 }
