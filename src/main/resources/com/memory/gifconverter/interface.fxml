@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.memory.gifconverter.Controller">
+   <right>
+      <Button mnemonicParsing="false" onMouseClicked="#OnSelectVideo" prefHeight="273.0" prefWidth="117.0" text="Select video" textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER_RIGHT">
+         <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </BorderPane.margin>
+      </Button>
+   </right>
+   <left>
+      <Button mnemonicParsing="false" onMouseClicked="#OnSelectFolderAndRender" prefHeight="291.0" prefWidth="156.0" text="Select folder and render" textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER_LEFT">
+         <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </BorderPane.margin>
+      </Button>
+   </left>
+   <center>
+      <HBox prefHeight="297.0" prefWidth="307.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="image" fitHeight="233.0" fitWidth="307.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </HBox>
+   </center>
+   <bottom>
+      <GridPane prefHeight="68.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="351.0" minWidth="10.0" prefWidth="260.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="195.0" minWidth="10.0" prefWidth="104.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="263.0" minWidth="10.0" prefWidth="236.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Slider fx:id="bitrate" blockIncrement="0.0" majorTickUnit="64.0" max="512.0" min="64.0" minorTickCount="0" prefHeight="38.0" prefWidth="140.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="64.0" GridPane.columnIndex="2">
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
+            </Slider>
+            <Slider fx:id="numbersOfColor" blockIncrement="0.0" majorTickUnit="1.0" max="32.0" min="3.0" minorTickCount="0" prefHeight="34.0" prefWidth="141.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
+            </Slider>
+            <Label prefHeight="34.0" prefWidth="183.0" text="Bitrate in Kbits" wrapText="true" GridPane.columnIndex="1">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
+            </Label>
+            <Label prefHeight="34.0" prefWidth="183.0" text="Number of colors" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
+            </Label>
+            <CheckBox fx:id="isSaveWithSameName" mnemonicParsing="false" prefHeight="42.0" prefWidth="257.0" text="Save with same name?">
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
+            </CheckBox>
+            <CheckBox fx:id="isOpenAfterRender" mnemonicParsing="false" prefHeight="42.0" prefWidth="257.0" text="Open after render is done?" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
+            </CheckBox>
+         </children>
+      </GridPane>
+   </bottom>
+   <top>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </BorderPane.margin>
+         <children>
+            <Label fx:id="currentFileText" prefHeight="30.0" prefWidth="657.0" text="Current file: ">
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
+            </Label>
+            <TextField fx:id="gifName" promptText="Gif's name here" GridPane.rowIndex="1" />
+         </children>
+      </GridPane>
+   </top>
+</BorderPane>
